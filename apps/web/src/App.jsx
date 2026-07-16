@@ -5,8 +5,6 @@ import CartDrawer from './components/CartDrawer';
 import MenuTab from './components/MenuTab';
 import OrdersTab from './components/OrdersTab';
 import RewardsTab from './components/RewardsTab';
-import BottomNavBar from './components/BottomNavBar';
-import Footer from './components/Footer';
 
 import CheckoutTab from './components/CheckoutTab';
 import AdminDashboard from './components/AdminDashboard';
@@ -38,19 +36,13 @@ function AppContent() {
         <Header />
         
         {/* Main Content Area */}
-        <main className="max-w-container-max mx-auto px-4 md:px-margin-desktop py-8 md:py-16 pb-28 md:pb-16">
+        <main className="max-w-container-max mx-auto px-4 md:px-margin-desktop py-8 md:py-16">
           {renderActiveTab()}
         </main>
       </div>
 
       {/* Cart Slider Drawer */}
       <CartDrawer />
-
-      {/* Bottom Navbar (Mobile Only) */}
-      <BottomNavBar />
-
-      {/* Footer (Desktop Only) */}
-      <Footer />
     </div>
   );
 }

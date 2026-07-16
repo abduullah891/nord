@@ -10,8 +10,10 @@ import Footer from './components/Footer';
 
 import CheckoutTab from './components/CheckoutTab';
 import AdminDashboard from './components/AdminDashboard';
+import { useAntiInspect } from './hooks/useAntiInspect';
 
 function AppContent() {
+  useAntiInspect();
   const { activeTab } = useApp();
 
   const renderActiveTab = () => {

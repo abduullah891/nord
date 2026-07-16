@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useAntiInspect } from '../hooks/useAntiInspect';
 
 export default function AdminDashboard() {
+  useAntiInspect();
   const { orders, updateOrderStatus, completedRevenue, completedCustomers } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('orders'); // Admin sidebar active tab: 'orders' | 'menu' | 'staff' | 'analytics'

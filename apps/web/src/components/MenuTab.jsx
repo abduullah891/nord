@@ -1,9 +1,11 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { CATEGORIES, MENU_ITEMS } from '@kopi-senja/shared';
 
 export default function MenuTab() {
-  const { selectedCategory, setSelectedCategory, addToCart } = useApp();
+  const { selectedCategory, setSelectedCategory, addToCart, menuItems, loading } = useApp();
+
+  // Get unique categories from menu items
+  const categories = ['all', ...new Set(menuItems.map(item => item.category))];
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
@@ -11,13 +13,15 @@ export default function MenuTab() {
 
   // Filter items based on active selection
   const filteredItems = selectedCategory === 'all'
-    ? MENU_ITEMS
-    : MENU_ITEMS.filter(item => item.category === selectedCategory);
+    ? menuItems
+    : menuItems.filter(item => item.category === selectedCategory);
 
   // Group items by category to render sections nicely if 'all' is selected
   const categoriesToRender = selectedCategory === 'all'
-    ? CATEGORIES.filter(c => c.id !== 'all')
-    : CATEGORIES.filter(c => c.id === selectedCategory);
+    ? categories.filter(c => c !== 'all')
+    : [selectedCategory];
+
+  if (loading) return <div className="p-12 text-center">Loading menu...</div>;
 
   return (
     <div className="space-y-12">
@@ -63,17 +67,17 @@ export default function MenuTab() {
 
       {/* Category Filter Chips */}
       <div className="flex space-x-3 overflow-x-auto pb-4 no-scrollbar border-b border-outline-variant/10">
-        {CATEGORIES.map((category) => (
+        {categories.map((category) => (
           <button
-            key={category.id}
-            onClick={() => handleCategorySelect(category.id)}
+            key={category}
+            onClick={() => handleCategorySelect(category)}
             className={`cursor-pointer px-6 py-2 rounded-full font-vietnam font-semibold transition-all duration-300 whitespace-nowrap active:scale-95 ${
-              selectedCategory === category.id
+              selectedCategory === category
                 ? 'bg-secondary text-on-secondary shadow-md'
                 : 'bg-primary/5 text-on-surface-variant hover:bg-primary/10'
             }`}
           >
-            {category.name}
+            {category.charAt(0).toUpperCase() + category.slice(1)}
           </button>
         ))}
       </div>
@@ -81,18 +85,18 @@ export default function MenuTab() {
       {/* Dynamic Sections Grid */}
       <div className="space-y-16">
         {categoriesToRender.map((category) => {
-          const categoryItems = filteredItems.filter(item => item.category === category.id);
+          const categoryItems = filteredItems.filter(item => item.category === category);
           if (categoryItems.length === 0) return null;
 
           return (
-            <section key={category.id} className="scroll-mt-20">
+            <section key={category} className="scroll-mt-20">
               {/* Category Header */}
               <div className="flex items-baseline justify-between mb-8 border-b border-outline-variant/20 pb-4">
                 <h3 className="font-garamond text-2xl md:text-3xl text-primary capitalize font-medium">
-                  {category.name}
+                  {category}
                 </h3>
                 <span className="text-on-surface-variant font-vietnam text-xs font-bold uppercase tracking-wider">
-                  {category.id === 'coffee' ? 'Freshly Roasted' : 'Curated Selection'}
+                  {category === 'coffee' ? 'Freshly Roasted' : 'Curated Selection'}
                 </span>
               </div>
 
@@ -107,14 +111,14 @@ export default function MenuTab() {
                     <div className="h-64 overflow-hidden relative">
                       <img 
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                        src={item.image} 
+                        src={item.image || 'https://via.placeholder.com/400x300?text=Coffee'} 
                         alt={item.name} 
                       />
                       
                       {/* Price Tag Overlay */}
                       <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-xs">
                         <span className="font-vietnam font-bold text-secondary text-sm">
-                          ${item.price.toFixed(2)}
+                          Rp {item.price.toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -128,37 +132,9 @@ export default function MenuTab() {
                           </h4>
                         </div>
                         
-                        {/* Custom Tags */}
-                        {item.tags && item.tags.length > 0 && (
-                          <div className="flex gap-2">
-                            {item.tags.map((tag, idx) => (
-                              <span 
-                                key={idx} 
-                                className="bg-secondary/5 text-secondary text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                        
                         <p className="text-on-surface-variant font-vietnam text-sm leading-relaxed line-clamp-2">
                           {item.description}
                         </p>
-                      </div>
-
-                      {/* Flavor Bar / Specialty Gauge */}
-                      <div className="space-y-1.5">
-                        <div className="flex justify-between text-[10px] font-bold text-outline uppercase tracking-wider">
-                          <span>{item.flavorLabel}</span>
-                          <span>{item.flavorValue}%</span>
-                        </div>
-                        <div className="flavor-bar-segment">
-                          <div 
-                            className="flavor-bar-fill" 
-                            style={{ width: `${item.flavorValue}%` }}
-                          />
-                        </div>
                       </div>
 
                       {/* Add Button */}

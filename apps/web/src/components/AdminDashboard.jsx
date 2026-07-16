@@ -200,7 +200,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background font-vietnam text-on-background flex">
       {/* Sidebar Navigation */}
-      <aside className="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant/20 p-6 space-y-4 z-50">
+      <aside className="flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant/20 p-6 space-y-4 z-50">
         <div className="mb-8">
           <h1 className="font-display-lg text-secondary text-2xl font-bold tracking-tight mb-1">Kopi Senja</h1>
           <p className="font-label-caps text-[10px] text-on-surface-variant opacity-70 tracking-widest font-bold uppercase">
@@ -232,38 +232,9 @@ export default function AdminDashboard() {
             <span className="material-symbols-outlined text-xl">restaurant_menu</span>
             <span className="font-title-lg text-sm">Menu Editor</span>
           </button>
-          
-          <button 
-            onClick={() => setActiveTab('staff')}
-            className={`cursor-pointer w-full flex items-center gap-3 px-4 py-3 rounded-lg font-bold transition-all active:translate-x-1 ${
-              activeTab === 'staff' 
-                ? 'bg-secondary text-on-secondary shadow-md' 
-                : 'text-on-surface-variant hover:bg-surface-variant/50'
-            }`}
-          >
-            <span className="material-symbols-outlined text-xl">group</span>
-            <span className="font-title-lg text-sm">Staff</span>
-          </button>
-          
-          <button 
-            onClick={() => setActiveTab('analytics')}
-            className={`cursor-pointer w-full flex items-center gap-3 px-4 py-3 rounded-lg font-bold transition-all active:translate-x-1 ${
-              activeTab === 'analytics' 
-                ? 'bg-secondary text-on-secondary shadow-md' 
-                : 'text-on-surface-variant hover:bg-surface-variant/50'
-            }`}
-          >
-            <span className="material-symbols-outlined text-xl">analytics</span>
-            <span className="font-title-lg text-sm">Analytics</span>
-          </button>
         </nav>
 
         <div className="pt-6 border-t border-outline-variant/20 space-y-2">
-          <button className="cursor-pointer w-full flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg transition-all">
-            <span className="material-symbols-outlined text-xl">settings</span>
-            <span className="font-title-lg text-sm">Settings</span>
-          </button>
-          
           <a 
             href="/"
             className="cursor-pointer w-full flex items-center gap-3 px-4 py-3 text-error hover:bg-error-container/20 rounded-lg transition-all"
@@ -274,14 +245,8 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
-      {/* Mobile Top Bar */}
-      <header className="md:hidden w-full fixed top-0 left-0 bg-background border-b border-outline-variant/10 px-4 py-4 flex justify-between items-center z-50">
-        <h1 className="font-display-lg text-secondary text-xl font-bold">Kopi Senja</h1>
-        <span className="material-symbols-outlined text-primary text-2xl">menu</span>
-      </header>
-
       {/* Main Content Area */}
-      <main className="flex-1 md:ml-64 p-4 md:p-12 pt-20 md:pt-12 min-h-screen">
+      <main className="flex-1 ml-64 p-12 min-h-screen">
         
         {/* Header Section */}
         <div className="max-w-container-max mx-auto mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">

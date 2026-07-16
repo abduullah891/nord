@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model MenuItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  image       String?
+  category    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id           String   @id @default(cuid())
+  customerName String
+  tableNumber String
+  status       String   @default("Pending") // Pending, Preparing, Ready, Completed
+  total        Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  items        OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  menuItemId String
+  quantity  Int
+  price     Float
+  name      String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem  MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+}

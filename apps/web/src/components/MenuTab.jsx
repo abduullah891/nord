@@ -21,46 +21,6 @@ export default function MenuTab() {
 
   return (
     <div className="space-y-12">
-      
-      {/* Welcome Hero Section */}
-      <section className="mb-12 md:mb-20 text-center md:text-left flex flex-col md:flex-row items-center gap-12">
-        <div className="flex-1 space-y-4">
-          <span className="font-vietnam text-xs font-bold text-secondary uppercase tracking-widest">
-            The Artisanal Experience
-          </span>
-          <h2 className="font-garamond text-display-lg-mobile md:text-display-lg text-primary leading-tight font-semibold">
-            Your morning ritual, <br />perfected at sunset.
-          </h2>
-          <p className="text-on-surface-variant max-w-xl font-vietnam text-base leading-relaxed">
-            Each cup is a labor of patience, from bean selection to the final pour. 
-            Discover our curated selection of roasts and handmade pastries.
-          </p>
-        </div>
-        
-        <div className="flex-1 w-full relative">
-          <div className="w-full h-[400px] rounded-xl overflow-hidden shadow-xl rotate-1 hover:rotate-0 transition-transform duration-500 group">
-            <img 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMa_6hd6Vq22HW1Gqj1eL12LlAggAA1ch0Ped8sAjT4sl_SKDouESt8C5HGx6_eJ8O3Amx3nSVuKbu3W2rwv2FyH7fX90quhQ5a6IxdebwMp8zepYBn2GGwAluL31nLsCyhDS0hv1bV93GMkiLHnjMAmNsA9Yasv4UJjzE-OOJj9G4-7A3c2XJ2qwW5gXGFZ_Nrh5Yl5aug6QZqchqusUmTBei5i-yw1sPw7CAuIyiLvw9-IN3DkJhPv65E7cgvZtjvJuqRYPksE" 
-              alt="Artisanal Cafe Interior Golden Hour"
-            />
-          </div>
-          
-          {/* Floating Award Badge */}
-          <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-lg hidden md:block">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center text-secondary">
-                <span className="material-symbols-outlined fill-icon">stars</span>
-              </div>
-              <div>
-                <p className="font-vietnam text-sm font-bold text-primary">Award Winning</p>
-                <p className="text-xs text-on-surface-variant font-vietnam">Roast of the Year 2024</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Category Filter Chips */}
       <div className="flex space-x-3 overflow-x-auto pb-4 no-scrollbar border-b border-outline-variant/10">
         {CATEGORIES.map((category) => (

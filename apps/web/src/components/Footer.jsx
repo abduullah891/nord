@@ -14,7 +14,7 @@ export default function Footer() {
             onClick={() => setActiveTab('menu')}
             className="font-display-lg text-headline-md text-secondary font-bold tracking-tight text-left cursor-pointer"
           >
-            Kopi Senja
+            Nord Cafe
           </button>
           <p className="text-on-surface-variant max-w-sm text-sm leading-relaxed">
             Crafting moments of peace in the heart of the city. Join our community of coffee lovers.
@@ -63,7 +63,7 @@ export default function Footer() {
 
       <div className="max-w-container-max mx-auto px-margin-desktop mt-16 pt-8 border-t border-outline-variant/10 text-center">
         <p className="text-[10px] font-bold uppercase tracking-wider text-outline">
-          © 2026 Kopi Senja Coffee House. All rights reserved.
+          © 2026 Nord Cafe Coffee House. All rights reserved.
         </p>
       </div>
     </footer>

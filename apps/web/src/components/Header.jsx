@@ -19,7 +19,7 @@ export default function Header() {
           onClick={() => setActiveTab('menu')}
           className="font-display-lg text-display-lg-mobile md:text-display-lg text-secondary hover:opacity-90 transition-opacity font-bold tracking-tight cursor-pointer"
         >
-          Kopi Senja
+          Nord Cafe
         </button>
 
         {/* Desktop Navigation */}

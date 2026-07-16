@@ -115,7 +115,7 @@ export default function AdminDashboard() {
 
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('Kopi Senja', 40, y, { align: 'center' });
+    doc.text('Nord Cafe', 40, y, { align: 'center' });
 
     y += 5;
     doc.setFontSize(8);
@@ -204,7 +204,7 @@ export default function AdminDashboard() {
       {/* Sidebar Navigation */}
       <aside className="flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant/20 p-6 space-y-4 z-50">
         <div className="mb-8">
-          <h1 className="font-display-lg text-secondary text-2xl font-bold tracking-tight mb-1">Kopi Senja</h1>
+          <h1 className="font-display-lg text-secondary text-2xl font-bold tracking-tight mb-1">Nord Cafe</h1>
           <p className="font-label-caps text-[10px] text-on-surface-variant opacity-70 tracking-widest font-bold uppercase">
             Admin Portal
           </p>
@@ -569,7 +569,7 @@ export default function AdminDashboard() {
 
             {/* Receipt Branding Header */}
             <div className="text-center space-y-1">
-              <h4 className="font-garamond text-xl font-bold text-gray-900 tracking-tight">Kopi Senja</h4>
+              <h4 className="font-garamond text-xl font-bold text-gray-900 tracking-tight">Nord Cafe</h4>
               <p className="text-[10px] text-gray-500">Artisanal Coffee & Pastry</p>
               <p className="text-[9px] text-gray-400">Sunset Boulevard No. 64, Jakarta</p>
               <p className="text-[9px] text-gray-400">Telp: (021) 555-8940</p>

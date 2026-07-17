@@ -48,8 +48,15 @@ function AppContent() {
 }
 
 export default function App() {
+  // Debug: log pathname and token
+  console.log('App.jsx: window.location.pathname', window.location.pathname);
+  console.log('App.jsx: VITE_ADMIN_SECRET_TOKEN', import.meta.env.VITE_ADMIN_SECRET_TOKEN);
+  
   const ADMIN_PATH = `/${import.meta.env.VITE_ADMIN_SECRET_TOKEN}`;
-  const isAdmin = window.location.pathname.startsWith(ADMIN_PATH);
+  const isAdmin = window.location.pathname === ADMIN_PATH; // Match exact path
+
+  console.log('App.jsx: ADMIN_PATH', ADMIN_PATH);
+  console.log('App.jsx: isAdmin', isAdmin);
 
   if (isAdmin) {
     return (

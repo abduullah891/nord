@@ -12,7 +12,18 @@ import { useAntiInspect } from './hooks/useAntiInspect';
 
 function AppContent() {
   useAntiInspect();
-  const { activeTab } = useApp();
+  const { activeTab, loading } = useApp();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <span className="material-symbols-outlined text-secondary text-6xl animate-spin">refresh</span>
+          <p className="text-on-surface-variant font-vietnam">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const renderActiveTab = () => {
     switch (activeTab) {

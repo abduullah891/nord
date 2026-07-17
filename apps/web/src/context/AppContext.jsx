@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { MENU_ITEMS } from '@kopi-senja/shared';
 
 const AppContext = createContext();
 
@@ -9,7 +10,7 @@ export const AppProvider = ({ children }) => {
   const [cartOpen, setCartOpen] = useState(false);
   const [points, setPoints] = useState(0); // Starts with 0 points for production
   const [orders, setOrders] = useState([]);
-  const [menuItems, setMenuItems] = useState([]);
+  const [menuItems, setMenuItems] = useState(MENU_ITEMS); // Default to shared menu
   const [loading, setLoading] = useState(true);
 
   // Cumulative statistics for production KPIs
@@ -19,22 +20,35 @@ export const AppProvider = ({ children }) => {
   // Fetch menu and orders from API
   const fetchData = async () => {
     try {
-      const [menuRes, ordersRes] = await Promise.all([
-        fetch('/.netlify/functions/menu'),
-        fetch('/.netlify/functions/orders')
-      ]);
-      
-      const menuItemsData = await menuRes.json();
-      const ordersData = await ordersRes.json();
-      
-      setMenuItems(menuItemsData);
-      setOrders(ordersData);
-      
-      // Calculate completed stats
-      const completedOrders = ordersData.filter(order => order.status === 'Completed');
-      const totalRevenue = completedOrders.reduce((sum, order) => sum + order.total, 0);
-      setCompletedRevenue(totalRevenue);
-      setCompletedCustomers(completedOrders.length);
+      // Try to fetch menu, if fails use default MENU_ITEMS
+      try {
+        const menuRes = await fetch('/.netlify/functions/menu');
+        if (menuRes.ok) {
+          const menuItemsData = await menuRes.json();
+          if (menuItemsData && menuItemsData.length > 0) {
+            setMenuItems(menuItemsData);
+          }
+        }
+      } catch (menuErr) {
+        console.warn('Failed to fetch menu, using default:', menuErr);
+      }
+
+      // Try to fetch orders
+      try {
+        const ordersRes = await fetch('/.netlify/functions/orders');
+        if (ordersRes.ok) {
+          const ordersData = await ordersRes.json();
+          setOrders(ordersData);
+          
+          // Calculate completed stats
+          const completedOrders = ordersData.filter(order => order.status === 'Completed');
+          const totalRevenue = completedOrders.reduce((sum, order) => sum + order.total, 0);
+          setCompletedRevenue(totalRevenue);
+          setCompletedCustomers(completedOrders.length);
+        }
+      } catch (ordersErr) {
+        console.warn('Failed to fetch orders:', ordersErr);
+      }
     } catch (err) {
       console.error('Failed to fetch data:', err);
     } finally {

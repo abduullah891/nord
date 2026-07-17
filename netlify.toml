@@ -3,6 +3,9 @@
   publish = "dist"
   command = "npm run build"
 
+[functions]
+  directory = "api"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

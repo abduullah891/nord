@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { MENU_ITEMS } from '@kopi-senja/shared';
 
 const AppContext = createContext();
 
@@ -9,93 +8,42 @@ export const AppProvider = ({ children }) => {
   const [cart, setCart] = useState([]); // Cart starts empty for production
   const [cartOpen, setCartOpen] = useState(false);
   const [points, setPoints] = useState(0); // Starts with 0 points for production
-
-  const [orders, setOrders] = useState(() => {
-    // Clear legacy local storage values if they contain dummy data on first load
-    const saved = localStorage.getItem('kopi_senja_orders');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        // Filter out any mock order records from active local storage database
-        const clean = parsed.filter(
-          (order) => !['KS-1082', 'KS-1081', 'KS-1079', 'KS-8201', 'KS-7945'].includes(order.id)
-        );
-        return clean;
-      } catch (e) {
-        console.error('Failed to parse orders from localStorage', e);
-      }
-    }
-    return []; // Starts empty for production
-  });
+  const [orders, setOrders] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Cumulative statistics for production KPIs
-  const [completedRevenue, setCompletedRevenue] = useState(() => {
-    const saved = localStorage.getItem('kopi_senja_revenue');
-    if (saved) {
-      const val = parseFloat(saved);
-      // Clean up legacy dummy stats offset if present
-      if (val === 1240.50) {
-        localStorage.setItem('kopi_senja_revenue', '0');
-        return 0;
-      }
-      return val;
+  const [completedRevenue, setCompletedRevenue] = useState(0);
+  const [completedCustomers, setCompletedCustomers] = useState(0);
+
+  // Fetch menu and orders from API
+  const fetchData = async () => {
+    try {
+      const [menuRes, ordersRes] = await Promise.all([
+        fetch('/.netlify/functions/menu'),
+        fetch('/.netlify/functions/orders')
+      ]);
+      
+      const menuItemsData = await menuRes.json();
+      const ordersData = await ordersRes.json();
+      
+      setMenuItems(menuItemsData);
+      setOrders(ordersData);
+      
+      // Calculate completed stats
+      const completedOrders = ordersData.filter(order => order.status === 'Completed');
+      const totalRevenue = completedOrders.reduce((sum, order) => sum + order.total, 0);
+      setCompletedRevenue(totalRevenue);
+      setCompletedCustomers(completedOrders.length);
+    } catch (err) {
+      console.error('Failed to fetch data:', err);
+    } finally {
+      setLoading(false);
     }
-    return 0;
-  });
-
-  const [completedCustomers, setCompletedCustomers] = useState(() => {
-    const saved = localStorage.getItem('kopi_senja_customers');
-    if (saved) {
-      const val = parseInt(saved, 10);
-      // Clean up legacy dummy stats offset if present
-      if (val === 1284) {
-        localStorage.setItem('kopi_senja_customers', '0');
-        return 0;
-      }
-      return val;
-    }
-    return 0;
-  });
-
-  // Save to localStorage whenever orders change
-  useEffect(() => {
-    localStorage.setItem('kopi_senja_orders', JSON.stringify(orders));
-  }, [orders]);
-
-  // Save statistics to localStorage
-  useEffect(() => {
-    localStorage.setItem('kopi_senja_revenue', completedRevenue.toString());
-  }, [completedRevenue]);
+  };
 
   useEffect(() => {
-    localStorage.setItem('kopi_senja_customers', completedCustomers.toString());
-  }, [completedCustomers]);
-
-  // Sync state across browser tabs
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === 'kopi_senja_orders') {
-        try {
-          if (e.newValue) {
-            const parsed = JSON.parse(e.newValue);
-            const clean = parsed.filter(
-              (order) => !['KS-1082', 'KS-1081', 'KS-1079', 'KS-8201', 'KS-7945'].includes(order.id)
-            );
-            setOrders(clean);
-          } else {
-            setOrders([]);
-          }
-        } catch (err) {
-          console.error('Sync parsing failed', err);
-        }
-      } else if (e.key === 'kopi_senja_revenue') {
-        if (e.newValue) setCompletedRevenue(parseFloat(e.newValue));
-      } else if (e.key === 'kopi_senja_customers') {
-        if (e.newValue) setCompletedCustomers(parseInt(e.newValue, 10));
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    fetchData();
   }, []);
 
   const addToCart = (item) => {
@@ -143,48 +91,51 @@ export const AppProvider = ({ children }) => {
     );
   };
 
-  const checkout = (customerName, tableNumber) => {
+  const checkout = async (customerName, tableNumber) => {
     if (cart.length === 0) return false;
 
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const pointsEarned = Math.floor(total);
 
-    const now = new Date();
-    const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    const newOrder = {
-      id: `KS-${Math.floor(1000 + Math.random() * 9000)}`,
-      customerName: customerName || 'Guest Customer',
-      tableNumber: tableNumber ? `Table ${tableNumber}` : 'Takeaway',
-      date: `Today, ${formattedTime}`,
-      status: 'Pending', // Order starts as Pending in admin portal
-      items: cart.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
-      total: parseFloat((total * 1.08).toFixed(2)),
-      pointsEarned
-    };
-
-    setOrders((prevOrders) => [newOrder, ...prevOrders]);
-    setPoints(prevPoints => prevPoints + pointsEarned);
-    setCart([]);
-    return true;
+    try {
+      await fetch('/.netlify/functions/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: customerName || 'Guest Customer',
+          tableNumber: tableNumber ? `Table ${tableNumber}` : 'Takeaway',
+          items: cart.map(item => ({ 
+            name: item.name, 
+            quantity: item.quantity, 
+            price: item.price,
+            menuItemId: item.id 
+          })),
+          total: parseFloat((total * 1.08).toFixed(2)),
+        }),
+      });
+      
+      await fetchData(); // Refresh orders
+      setPoints(prevPoints => prevPoints + pointsEarned);
+      setCart([]);
+      return true;
+    } catch (err) {
+      console.error('Checkout failed', err);
+      return false;
+    }
   };
 
-  const updateOrderStatus = (orderId, newStatus) => {
-    setOrders((prevOrders) => {
-      const orderToProgress = prevOrders.find((order) => order.id === orderId);
-      if (newStatus === 'Completed') {
-        if (orderToProgress) {
-          // Increment completed stats for KPIs
-          setCompletedRevenue((prev) => prev + orderToProgress.total);
-          setCompletedCustomers((prev) => prev + 1);
-        }
-        // Completed orders are deleted immediately
-        return prevOrders.filter((order) => order.id !== orderId);
-      }
-      return prevOrders.map((order) =>
-        order.id === orderId ? { ...order, status: newStatus } : order
-      );
-    });
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await fetch(`/.netlify/functions/orders/${orderId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      
+      await fetchData(); // Refresh orders
+    } catch (err) {
+      console.error('Update order status failed', err);
+    }
   };
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -205,13 +156,14 @@ export const AppProvider = ({ children }) => {
       setCartOpen,
       points,
       orders,
+      menuItems,
       checkout,
       updateOrderStatus,
       cartCount,
       cartSubtotal,
       completedRevenue,
       completedCustomers,
-      menuItems: MENU_ITEMS
+      loading
     }}>
       {children}
     </AppContext.Provider>

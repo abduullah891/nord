@@ -7,6 +7,31 @@ import { useAntiInspect } from '../hooks/useAntiInspect';
 export default function AdminDashboard() {
   useAntiInspect();
   const { orders, updateOrderStatus, completedRevenue, completedCustomers } = useApp();
+  
+  // Format date from createdAt
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    
+    // Check if it's today
+    const isToday = date.toDateString() === today.toDateString();
+    
+    // Format date
+    const datePart = isToday ? 'Today' : date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    });
+    
+    // Format time
+    const timePart = date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    });
+    
+    return `${datePart}, ${timePart}`;
+  };
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('orders'); // Admin sidebar active tab: 'orders' | 'menu' | 'staff' | 'analytics'
   const [selectedReceiptOrder, setSelectedReceiptOrder] = useState(null);
@@ -136,7 +161,7 @@ export default function AdminDashboard() {
     doc.setFontSize(7);
     doc.text(`ORDER ID: ${order.id}`, 5, y);
     y += 4;
-    doc.text(`DATE: ${order.date}`, 5, y);
+    doc.text(`DATE: ${formatDate(order.createdAt)}`, 5, y);
     y += 4;
     doc.text(`CUST NAME: ${order.customerName}`, 5, y);
     y += 4;
@@ -478,10 +503,10 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4">
                           <p className="text-xs text-on-surface-variant font-semibold">
-                            {order.date.includes(',') ? order.date.split(',')[0] : 'Today'}
+                            {formatDate(order.createdAt).split(',')[0]}
                           </p>
                           <p className="text-[10px] text-on-surface-variant/60">
-                            {order.date.includes(',') ? order.date.split(',')[1].trim() : order.date}
+                            {formatDate(order.createdAt).split(',')[1]?.trim() || ''}
                           </p>
                         </td>
                         <td className="px-6 py-4 text-right">
@@ -586,7 +611,7 @@ export default function AdminDashboard() {
               </div>
               <div className="flex justify-between">
                 <span>DATE:</span>
-                <span>{selectedReceiptOrder.date}</span>
+                <span>{formatDate(selectedReceiptOrder.createdAt)}</span>
               </div>
               <div className="flex justify-between">
                 <span>CUST NAME:</span>

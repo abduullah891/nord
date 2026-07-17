@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { CATEGORIES, MENU_ITEMS } from '@kopi-senja/shared';
+import { CATEGORIES } from '@kopi-senja/shared';
 
 export default function MenuTab() {
   const { selectedCategory, setSelectedCategory, addToCart } = useApp();
@@ -9,10 +9,12 @@ export default function MenuTab() {
     setSelectedCategory(categoryId);
   };
 
+  const { menuItems } = useApp();
+  
   // Filter items based on active selection
   const filteredItems = selectedCategory === 'all'
-    ? MENU_ITEMS
-    : MENU_ITEMS.filter(item => item.category === selectedCategory);
+    ? menuItems
+    : menuItems.filter(item => item.category === selectedCategory);
 
   // Group items by category to render sections nicely if 'all' is selected
   const categoriesToRender = selectedCategory === 'all'
